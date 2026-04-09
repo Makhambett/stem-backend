@@ -56,11 +56,16 @@ class Application(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     phone = Column(String, nullable=False)
+    username = Column(String, nullable=True)
     comment = Column(Text, nullable=True)
     product_name = Column(String, nullable=False)
     article = Column(String, nullable=True)
+    product_url = Column(String, nullable=True)
     status = Column(String, default="new")
-    created_at = Column(String, default=lambda: str(datetime.now()))
+    manager_id = Column(Integer, nullable=True)
+    manager_name = Column(String, nullable=True)
+    created_at = Column(String, default=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    updated_at = Column(String, default=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 
 class User(Base):
