@@ -31,6 +31,7 @@ app.add_middleware(
         "https://*.vercel.app",
         "https://*.onrender.com",
         "*",
+        "https://stem-catalog.tnysovm.workers.dev",
     ],
     allow_credentials=True,
     allow_methods=["*"],
