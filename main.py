@@ -24,19 +24,21 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
+        "http://localhost:3000",
         "http://localhost:8000",
         "https://stem-catalog.netlify.app",
-        "https://*.netlify.app",
         "https://stem-catalog.vercel.app",
+        "https://stem-catalog.tnysovm.workers.dev",  # ✅ твой домен
+        "https://*.netlify.app",
         "https://*.vercel.app",
+        "https://*.workers.dev",                      # ✅ все workers.dev
         "https://*.onrender.com",
-        "*",
-        "https://stem-catalog.tnysovm.workers.dev",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # ✅ 3. Читаем настройки из .env (безопасно!)
 BITRIX_WEBHOOK_URL = os.getenv("BITRIX_WEBHOOK_URL")
