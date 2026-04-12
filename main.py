@@ -25,13 +25,15 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:8000",
-        "https://stem-catalog.netlify.app",  # ✅ Ваш домен
-        "https://*.netlify.app",              # ✅ Все поддомены Netlify
-        "https://*.onrender.com",             # ✅ Все поддомены Render
-        "*",                                   # ✅ Разрешить все (для отладки)
+        "https://stem-catalog.netlify.app",  # Старый домен (можно оставить)
+        "https://*.netlify.app",
+        "https://stem-catalog.vercel.app",   # ✅ Новый домен Vercel
+        "https://*.vercel.app",              # ✅ Все домены Vercel
+        "https://*.onrender.com",
+        "*",                                  # Для отладки
     ],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
