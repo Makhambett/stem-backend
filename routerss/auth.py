@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import User
 from pydantic import BaseModel
+from typing import Optional
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
@@ -22,6 +23,7 @@ class RegisterData(BaseModel):
     name: str
     email: str
     password: str
+    phone: Optional[str] = None  # ✅ новое поле (необязательное)
 
 class LoginData(BaseModel):
     email: str
@@ -31,6 +33,8 @@ class UserOut(BaseModel):
     id: int
     name: str
     email: str
+    phone: Optional[str] = None  # ✅ новое поле
+
     class Config:
         from_attributes = True
 
@@ -54,7 +58,8 @@ def register(data: RegisterData, db: Session = Depends(get_db)):
     user = User(
         name=data.name,
         email=data.email,
-        password=pwd.hash(data.password)
+        password=pwd.hash(data.password),
+        phone=data.phone  # ✅ сохраняем телефон
     )
     db.add(user)
     db.commit()
@@ -62,7 +67,7 @@ def register(data: RegisterData, db: Session = Depends(get_db)):
     return {
         "access_token": make_token(user.id),
         "token_type": "bearer",
-        "user": {"id": user.id, "name": user.name, "email": user.email}
+        "user": {"id": user.id, "name": user.name, "email": user.email, "phone": user.phone}
     }
 
 @router.post("/login")
@@ -73,7 +78,7 @@ def login(data: LoginData, db: Session = Depends(get_db)):
     return {
         "access_token": make_token(user.id),
         "token_type": "bearer",
-        "user": {"id": user.id, "name": user.name, "email": user.email}
+        "user": {"id": user.id, "name": user.name, "email": user.email, "phone": user.phone}
     }
 
 @router.get("/me", response_model=UserOut)
