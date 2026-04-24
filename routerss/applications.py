@@ -63,7 +63,7 @@ def normalize_phone(phone: str) -> str:
 # ==========================================
 
 async def send_to_bitrix(data: dict):
-    \"\"\"Отправляет заявку в Битрикс24 (создает Лид)\"\"\"
+    """Отправляет заявку в Битрикс24 (создает Лид)"""
     if not BITRIX_WEBHOOK_URL:
         print("⚠️ Bitrix webhook URL не настроен")
         return
@@ -77,16 +77,11 @@ async def send_to_bitrix(data: dict):
             "NAME": data.get('name', 'Не указано'),
             "PHONE": [{"VALUE": data.get('phone', ''), "VALUE_TYPE": "WORK"}],
             "COMMENTS": (
-                f"Товар: {data.get('product_name')}\
-"
-                f"Артикул: {data.get('article') or '—'}\
-"
-                f"Ссылка: {data.get('product_url') or '—'}\
-"
-                f"Telegram: @{data.get('username') if data.get('username') else 'Не указан'}\
-"
-                f"Комментарий клиента: {data.get('comment', '—')}\
-"
+                f"Товар: {data.get('product_name')}\n"
+                f"Артикул: {data.get('article') or '—'}\n"
+                f"Ссылка: {data.get('product_url') or '—'}\n"
+                f"Telegram: @{data.get('username') if data.get('username') else 'Не указан'}\n"
+                f"Комментарий клиента: {data.get('comment', '—')}\n"
                 f"ID заявки: {data.get('id', 'N/A')}"
             ),
             "SOURCE_ID": "WEB",
@@ -112,36 +107,23 @@ async def send_to_bitrix(data: dict):
 # ==========================================
 
 async def send_to_telegram(data: dict, app_id: int):
-    \"\"\"Отправляет уведомление в Telegram группу\"\"\"
+    """Отправляет уведомление в Telegram группу"""
     if not BOT_TOKEN or not GROUP_CHAT_ID:
         print("⚠️ Telegram токен или chat_id не настроены")
         return
 
-    username_line = f"🔗 <b>Username:</b> @{data.get('username')}\
-" if data.get('username') else ""
+    username_line = f"🔗 <b>Username:</b> @{data.get('username')}\n" if data.get('username') else ""
     
     text = (
-        f"📥 <b>Новая заявка с сайта</b>\
-\
-"
-        f"🆔 <b>ID:</b> #{app_id}\
-"
-        f"📌 <b>Статус:</b> 🟡 Новая\
-"
-        f"🕒 <b>Время:</b> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\
-\
-"
-        f"📦 <b>Товар:</b> {data.get('product_name')}\
-"
-        f"🔖 <b>Артикул:</b> {data.get('article') or '—'}\
-"
-        f"🌐 <b>Ссылка:</b> {data.get('product_url') or '—'}\
-\
-"
-        f"👤 <b>Имя:</b> {data.get('name')}\
-"
-        f"📞 <b>Телефон:</b> {data.get('phone')}\
-"
+        f"📥 <b>Новая заявка с сайта</b>\n\n"
+        f"🆔 <b>ID:</b> #{app_id}\n"
+        f"📌 <b>Статус:</b> 🟡 Новая\n"
+        f"🕒 <b>Время:</b> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+        f"📦 <b>Товар:</b> {data.get('product_name')}\n"
+        f"🔖 <b>Артикул:</b> {data.get('article') or '—'}\n"
+        f"🌐 <b>Ссылка:</b> {data.get('product_url') or '—'}\n\n"
+        f"👤 <b>Имя:</b> {data.get('name')}\n"
+        f"📞 <b>Телефон:</b> {data.get('phone')}\n"
         f"{username_line}"
         f"💬 <b>Комментарий:</b> {data.get('comment') or '—'}"
     )
