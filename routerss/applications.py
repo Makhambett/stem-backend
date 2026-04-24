@@ -32,10 +32,6 @@ class ApplicationCreate(BaseModel):
     article: str | None = None
     product_url: str | None = None
 
-class TakeApplication(BaseModel):
-    manager_id: int
-    manager_name: str
-
 # ==========================================
 # ВАЛИДАЦИЯ И ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 # ==========================================
@@ -63,12 +59,11 @@ def normalize_phone(phone: str) -> str:
 # ==========================================
 
 async def send_to_bitrix(data: dict):
-    \"\"\"Отправляет заявку в Битрикс24 (создает Лид)\"\"\"
+    """Отправляет заявку в Битрикс24 (создает Лид)"""
     if not BITRIX_WEBHOOK_URL:
         print("⚠️ Bitrix webhook URL не настроен")
         return
 
-    # ✅ Исправленный URL с .json
     url = f"{BITRIX_WEBHOOK_URL.rstrip('/')}/crm.lead.add.json"
     
     payload = {
@@ -108,7 +103,7 @@ async def send_to_bitrix(data: dict):
 # ==========================================
 
 async def send_to_telegram(data: dict, app_id: int):
-    \"\"\"Отправляет уведомление в Telegram группу\"\"\"
+    """Отправляет уведомление в Telegram группу"""
     if not BOT_TOKEN or not GROUP_CHAT_ID:
         print("⚠️ Telegram токен или chat_id не настроены")
         return
@@ -142,21 +137,14 @@ async def send_to_telegram(data: dict, app_id: int):
         f"💬 <b>Комментарий:</b> {data.get('comment') or '—'}"
     )
 
-    keyboard = {
-        "inline_keyboard": [
-            [{"text": "✋ Взять заявку", "callback_data": f"take:{app_id}"}]
-        ]
-    }
-
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(
+            await client.post(
                 f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
                 json={
                     "chat_id": GROUP_CHAT_ID,
                     "text": text,
                     "parse_mode": "HTML",
-                    "reply_markup": keyboard,
                     "disable_web_page_preview": True,
                 },
             )
@@ -214,28 +202,6 @@ async def create_application(
 
     return {"status": "ok", "id": db_app.id}
 
-@router.get("/free")
-def get_free_applications(db: Session = Depends(get_db)):
-    return db.query(models.Application).filter(
-        models.Application.status == "new"
-    ).order_by(models.Application.id.asc()).all()
-
 @router.get("/")
 def get_applications(db: Session = Depends(get_db)):
     return db.query(models.Application).all()
-
-@router.patch("/{app_id}/status")
-def update_status(app_id: int, status: str, db: Session = Depends(get_db)):
-    allowed = {"new", "in_progress", "done", "rejected"}
-    if status not in allowed:
-        raise HTTPException(status_code=400, detail="Недопустимый статус")
-
-    app = db.query(models.Application).filter(models.Application.id == app_id).first()
-    if not app:
-        raise HTTPException(status_code=404, detail="Application not found")
-
-    app.status = status
-    app.updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    db.commit()
-    db.refresh(app)
-    return {"status": "updated", "application": app.id, "new_status": app.status}
